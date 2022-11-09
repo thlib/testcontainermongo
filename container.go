@@ -14,7 +14,7 @@ func New(ctx context.Context, tag, init string) (testcontainers.Container, strin
 	const (
 		name = "test_db"
 		user = "root"
-		pass = "password1234"
+		pass = "example"
 	)
 
 	// Create mongoQL container request

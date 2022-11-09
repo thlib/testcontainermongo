@@ -17,7 +17,7 @@ if err != nil {
 defer Terminate(ctx, container)
 
 fmt.Println(conn)
-// Output: mongodb://mongo:mongo@localhost:49156/test_db
+// Output: mongodb://root:example@localhost:49156/test_db
 ```
 
 ## Run tests
