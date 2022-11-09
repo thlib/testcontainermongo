@@ -57,7 +57,7 @@ func New(ctx context.Context, tag, init string) (testcontainers.Container, strin
 		return nil, "", fmt.Errorf("failed to get port: %w", err)
 	}
 
-	conn := fmt.Sprintf("mongo://%v:%v@%v:%v/%v", user, pass, host, port.Port(), name)
+	conn := fmt.Sprintf("mongodb://%v:%v@%v:%v/%v", user, pass, host, port.Port(), name)
 
 	// Create db connection string and connect
 	return container, conn, nil

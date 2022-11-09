@@ -10,14 +10,14 @@ if err != nil {
     log.Fatalf("%v", err)
 }
 ctx := context.Background()
-mongoC, conn, err := mongotestcontainer.New(ctx, "latest", initPath)
+container, conn, err := mongotestcontainer.New(ctx, "latest", initPath)
 if err != nil {
     log.Fatalf("%v", err)
 }
-defer Terminate(ctx, mongoC)
+defer Terminate(ctx, container)
 
 fmt.Println(conn)
-// Output: mongo://mongo:mongo@localhost:49156/test_db
+// Output: mongodb://mongo:mongo@localhost:49156/test_db
 ```
 
 ## Run tests

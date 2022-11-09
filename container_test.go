@@ -14,13 +14,13 @@ func TestNew(t *testing.T) {
 		t.Fatalf("%v", err)
 	}
 	ctx := context.Background()
-	mongoC, conn, err := New(ctx, "latest", schemaPath)
+	c, conn, err := New(ctx, "latest", schemaPath)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	defer Terminate(ctx, mongoC)
+	defer Terminate(ctx, c)
 
-	expected := regexp.QuoteMeta("mongo://root:password1234@localhost:") + "[0-9]+" + regexp.QuoteMeta("/test_db")
+	expected := regexp.QuoteMeta("mongodb://root:password1234@localhost:") + "[0-9]+" + regexp.QuoteMeta("/test_db")
 	rx, err := regexp.Compile(expected)
 	if err != nil {
 		t.Fatalf("%v", err)
