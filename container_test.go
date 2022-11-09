@@ -9,12 +9,12 @@ import (
 
 // TestNew runs an example mongodb container
 func TestNew(t *testing.T) {
-	schemaPath, err := filepath.Abs("init.sh")
+	fixtures, err := filepath.Abs("fixtures")
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 	ctx := context.Background()
-	c, conn, err := New(ctx, "latest", schemaPath)
+	c, conn, err := New(ctx, "latest", fixtures)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
