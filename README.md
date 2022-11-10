@@ -5,7 +5,7 @@ A mongo docker testcontainer for go
 ## Example usage:
 
 ```go
-initPath, err := filepath.Abs("fixtures")
+initPath, err := filepath.Abs("./fixtures")
 if err != nil {
     log.Fatalf("%v", err)
 }
