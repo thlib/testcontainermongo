@@ -9,6 +9,74 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
+type Option func(testcontainers.ContainerRequest) testcontainers.ContainerRequest
+
+// WithInit adds a path to a folder containing sql files to be executed on startup
+func WithInit(init string) Option {
+	return func(req testcontainers.ContainerRequest) testcontainers.ContainerRequest {
+		req.Mounts = testcontainers.Mounts(testcontainers.ContainerMount{
+			Source: testcontainers.GenericBindMountSource{
+				HostPath: init,
+			},
+			Target: testcontainers.ContainerMountTarget("/docker-entrypoint-initdb.d"),
+		})
+		return req
+	}
+}
+
+// WithDb adds a database name to the container request
+func WithDb(db string) Option {
+	return func(req testcontainers.ContainerRequest) testcontainers.ContainerRequest {
+		if req.Env == nil {
+			req.Env = make(map[string]string)
+		}
+		req.Env["MONGO_INITDB_DATABASE"] = db
+		return req
+	}
+}
+
+// WithAuth adds a username and password to the container request
+func WithAuth(user, pass string) Option {
+	return func(req testcontainers.ContainerRequest) testcontainers.ContainerRequest {
+		if req.Env == nil {
+			req.Env = make(map[string]string)
+		}
+		req.Env["MONGO_INITDB_ROOT_USERNAME"] = user
+		req.Env["MONGO_INITDB_ROOT_PASSWORD"] = pass
+		return req
+	}
+}
+
+// WithEnv replaces the environment variables of the container request
+func WithEnv(env map[string]string) Option {
+	return func(req testcontainers.ContainerRequest) testcontainers.ContainerRequest {
+		req.Env = env
+		return req
+	}
+}
+
+func connectionString(host, port string, env map[string]string) string {
+	if env == nil {
+		return fmt.Sprintf("mongodb://%s:%s", host, port)
+	}
+	db, dbOk := env["MONGO_INITDB_DATABASE"]
+	user, userOk := env["MONGO_INITDB_ROOT_USERNAME"]
+	password, passwordOk := env["MONGO_INITDB_ROOT_PASSWORD"]
+
+	credentials := user
+	if passwordOk {
+		credentials += fmt.Sprintf(":%s", password)
+	}
+	if userOk {
+		credentials += "@"
+	}
+
+	if dbOk {
+		return fmt.Sprintf("mongodb://%s%s:%s/%s", credentials, host, port, db)
+	}
+	return fmt.Sprintf("mongodb://%s%s:%s", credentials, host, port)
+}
+
 // New setup a mongo testcontainer
 func New(ctx context.Context, tag, init string) (testcontainers.Container, string, error) {
 	const (
@@ -57,7 +125,7 @@ func New(ctx context.Context, tag, init string) (testcontainers.Container, strin
 		return nil, "", fmt.Errorf("failed to get port: %w", err)
 	}
 
-	conn := fmt.Sprintf("mongodb://%v:%v@%v:%v/%v", user, pass, host, port.Port(), name)
+	conn := connectionString(host, port.Port(), req.Env)
 
 	// Create db connection string and connect
 	return container, conn, nil
