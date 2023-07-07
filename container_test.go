@@ -9,7 +9,7 @@ import (
 
 // TestNew runs an example mongodb container
 func TestNew(t *testing.T) {
-	fixtures, err := filepath.Abs("fixtures")
+	fixtures, err := filepath.Abs("initdb")
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
