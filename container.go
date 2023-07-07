@@ -78,31 +78,18 @@ func connectionString(host, port string, env map[string]string) string {
 }
 
 // New setup a mongo testcontainer
-func New(ctx context.Context, tag, init string) (testcontainers.Container, string, error) {
-	const (
-		name = "test_db"
-		user = "root"
-		pass = "example"
-	)
-
+func New(ctx context.Context, tag string, opts ...Option) (testcontainers.Container, string, error) {
 	// Create mongoQL container request
 	req := testcontainers.ContainerRequest{
-		Image: "mongo:" + tag,
-		Env: map[string]string{
-			"MONGO_INITDB_DATABASE":      name,
-			"MONGO_INITDB_ROOT_USERNAME": user,
-			"MONGO_INITDB_ROOT_PASSWORD": pass,
-		},
+		Image:        "mongo:" + tag,
+		Env:          map[string]string{},
 		ExposedPorts: []string{"27017/tcp"},
 		WaitingFor:   wait.ForListeningPort("27017/tcp"),
 	}
-	if init != "" {
-		req.Mounts = testcontainers.Mounts(testcontainers.ContainerMount{
-			Source: testcontainers.GenericBindMountSource{
-				HostPath: init,
-			},
-			Target: testcontainers.ContainerMountTarget("/docker-entrypoint-initdb.d"),
-		})
+
+	// Apply config options
+	for _, opt := range opts {
+		req = opt(req)
 	}
 
 	// Start mongoQL container
