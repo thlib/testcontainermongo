@@ -18,8 +18,8 @@ func TestNew(t *testing.T) {
 	ctx := context.Background()
 	c, conn, err := testcontainermongo.New(ctx, "latest",
 		testcontainermongo.WithInit(initdb),
-		testcontainermongo.WithAuth("root", "example"),
 		testcontainermongo.WithDb("test_db"),
+		testcontainermongo.WithAuth("root", "example"),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
