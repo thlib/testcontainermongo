@@ -11,12 +11,16 @@ import (
 
 // TestNew runs an example mongodb container
 func TestNew(t *testing.T) {
-	fixtures, err := filepath.Abs("initdb")
+	initdb, err := filepath.Abs("initdb")
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 	ctx := context.Background()
-	c, conn, err := testcontainermongo.New(ctx, "latest", fixtures)
+	c, conn, err := testcontainermongo.New(ctx, "latest",
+		testcontainermongo.WithInit(initdb),
+		testcontainermongo.WithAuth("root", "example"),
+		testcontainermongo.WithDb("test_db"),
+	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}

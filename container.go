@@ -78,7 +78,7 @@ func connectionString(host, port string, env map[string]string) string {
 }
 
 // New setup a mongo testcontainer
-func New(ctx context.Context, tag, init string) (testcontainers.Container, string, error) {
+func New(ctx context.Context, tag string, opts ...Option) (testcontainers.Container, string, error) {
 	const (
 		name = "test_db"
 		user = "root"
@@ -96,13 +96,8 @@ func New(ctx context.Context, tag, init string) (testcontainers.Container, strin
 		ExposedPorts: []string{"27017/tcp"},
 		WaitingFor:   wait.ForListeningPort("27017/tcp"),
 	}
-	if init != "" {
-		req.Mounts = testcontainers.Mounts(testcontainers.ContainerMount{
-			Source: testcontainers.GenericBindMountSource{
-				HostPath: init,
-			},
-			Target: testcontainers.ContainerMountTarget("/docker-entrypoint-initdb.d"),
-		})
+	for _, opt := range opts {
+		req = opt(req)
 	}
 
 	// Start mongoQL container
