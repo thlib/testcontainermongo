@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/thlib/testcontainermongo"
+	testmongo "github.com/thlib/testcontainermongo"
 )
 
 // TestNew runs an example mongodb container
@@ -16,15 +16,15 @@ func TestNew(t *testing.T) {
 		t.Fatalf("%v", err)
 	}
 	ctx := context.Background()
-	c, conn, err := testcontainermongo.New(ctx, "latest",
-		testcontainermongo.WithInit(initdb),
-		testcontainermongo.WithDb("test_db"),
-		testcontainermongo.WithAuth("root", "example"),
+	c, conn, err := testmongo.New(ctx, "latest",
+		testmongo.WithInit(initdb),
+		testmongo.WithDb("test_db"),
+		testmongo.WithAuth("root", "example"),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	defer testcontainermongo.Terminate(ctx, c)
+	defer testmongo.Terminate(ctx, c)
 
 	expected := regexp.QuoteMeta("mongodb://root:example@localhost:") + "[0-9]+" + regexp.QuoteMeta("/test_db")
 	rx, err := regexp.Compile(expected)

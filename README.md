@@ -5,16 +5,25 @@ A mongo docker testcontainer for go
 ## Example usage:
 
 ```go
+import (
+	"context"
+	"path/filepath"
+	"regexp"
+	"testing"
+
+	testmongo "github.com/thlib/testcontainermongo"
+)
 initPath, err := filepath.Abs("./initdb")
 if err != nil {
     log.Fatalf("%v", err)
 }
 ctx := context.Background()
-container, conn, err := mongotestcontainer.New(ctx, "latest", initPath)
-if err != nil {
-    log.Fatalf("%v", err)
-}
-defer Terminate(ctx, container)
+c, conn, err := testmongo.New(ctx, "latest",
+    testmongo.WithInit(initdb),
+    testmongo.WithDb("test_db"),
+    testmongo.WithAuth("root", "example"),
+)
+defer testmongo.Terminate(ctx, container)
 
 fmt.Println(conn)
 // Output: mongodb://root:example@localhost:49156/test_db
