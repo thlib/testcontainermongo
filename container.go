@@ -96,11 +96,8 @@ func New(ctx context.Context, tag string, opts ...Option) (testcontainers.Contai
 		ExposedPorts: []string{"27017/tcp"},
 		WaitingFor:   wait.ForListeningPort("27017/tcp"),
 	}
-<<<<<<< HEAD
-=======
 
 	// Apply config options
->>>>>>> origin/main
 	for _, opt := range opts {
 		req = opt(req)
 	}
